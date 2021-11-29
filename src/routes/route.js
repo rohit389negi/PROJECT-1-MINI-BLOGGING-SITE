@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = express.Router();
 const authorController=require('../controller/authorController')
 const blogController=require('../controller/blogController')
@@ -13,6 +12,11 @@ router.get('/test-me', function (req, res) {
 router.post('/authors',authorController.createAuthor )
 // Create Blog API
 router.post('/blogs', blogController.createBlog )
+
 // get blog API
 router.get('/blogs', blogController.getBlog  )
+
+router.get('/filterblogs', blogController.returnBlogsFiltered  )
+
+router.put('/blogs/:blogId',middleware.blogId,blogController.updateDetails)
 module.exports = router;

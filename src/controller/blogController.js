@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const blogModel = require('../model/blogModel.js')
 const authorModel = require('../model/authorModel.js')
 
@@ -22,37 +21,36 @@ const createBlog = async function (req, res) {
     }
 
 }
-
 const getBlog = async function (req, res) {
-    let authorId = req.query.authorId
-    let category = req.query.category
-    let tag = req.query.tags
-    let subcategory = req.query.subcategory
-    let data = req.query
-    if (data) {
-        blogData = await blogModel.findOne({ isDeleted: false, isPublished: true })
-        if (blogData) {
-            if (blogData.authorId == req.query.authorId) {
-                if (authorId || category || tag || subcategory) {
-                    let final = await blogModel.find({ tags : req.query.tags })//*, category : req.query.category , authorId :req.query.authorId, subcategory : req.query.subcategory})
-                    
-                    res.status(200).send({ status: true, data: final })
-                } else {
-                    res.status(401).send({ status: false, msg: "Bad Request" })
-                }
-
-            } else {
-                res.status(404).send({ status: false, msg: "authorId not Found" })
-            }
-        } else (
-            res.status(400).send({ status: false, msg: "No such Blog" })
-        )
-    } else {
-        res.status(401).send({ status: false, msg: "Missing mendatory request" })
+    const blogData = await blogModel.find({ isDeleted: false, isPublished: true })
+    if (!blogData) {
+        res.status(200).send({ status: true, data: blogData })
+    }
+    else {
+        res.status(404).send({ status: false, message: 'Not Found' })
     }
 }
+const returnBlogsFiltered = async function (req, res) {
+    //console.log(req.query);
+    const blogFound = await blogModel.find(req.query);
+    res.status(200).send({ msg: "succes", data: blogFound });
+}
 
+const updateDetails = async function (req, res) {
+    const title = req.body.title;
+    const body = req.body.body;
+    const tags = req.body.tags;
+    const subcategory = req.body.subcategory;
+   
+    let Update = await blogModel.findOneAndUpdate({ _id: req.params.blogId },{ title: title },{body:body} ,/*{$push: { tags: tags }},{$push: {subcategory: subcategory }},*/{ new: true})
+   
+    // let bodyUpdate = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { body: body }, { new: true })
+    // let tagsUpdate = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { tags: tags }}, { new: true })
+    // let subcategoryUpdate = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { subcategory: subcategory } }, { new: true })
+    console.log(Update)
+    res.send({Update})
+}
 
 module.exports = {
-    createBlog,getBlog 
+    createBlog, getBlog, returnBlogsFiltered, updateDetails
 }

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+
 const authorModel=require('../model/authorModel.js')
 
 const createAuthor= async function(req,res){
