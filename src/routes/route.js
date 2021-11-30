@@ -13,10 +13,12 @@ router.post('/authors',authorController.createAuthor )
 // Create Blog API
 router.post('/blogs', blogController.createBlog )
 
-// get blog API
-router.get('/blogs', blogController.getBlog  )
-
+// filter API
 router.get('/filterblogs', blogController.returnBlogsFiltered  )
-
+// update blog API
 router.put('/blogs/:blogId',middleware.blogId,blogController.updateDetails)
-module.exports = router;
+// delete blog API
+router.delete('/blogs/:blogId',middleware.blogId,blogController.deleteBlog)
+// deleteByFilter API
+router.delete('/blogs',blogController.deleteSpecific)
+module.exports = router;   
