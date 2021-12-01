@@ -51,7 +51,7 @@ const getBlog = async function (req, res) {
             obj.isPublished = true
             let data = await blogModel.find(obj)
             if (data==false) {
-                return res.status(404).send({ status: false, msg: "The given data is Invalid" });
+                return res.status(404).send({ status: false, msg: "The filter value is Invalid" });
             } else {
                 res.status(200).send({ status: true, message: "Successfully fetched all blogs", data: data })
             }
@@ -101,7 +101,7 @@ const deleteBlog = async function (req, res) {
         if (req.params.blogId) {
             if (req.validate._id == req.query.authorId) {
                 let data = await blogModel.find({ _id: id })
-                if (data.isdeleted == false) {
+                if (!data.isDeleted) {
                     let Update = {}
                     Update.isDeleted = await blogModel.findOneAndUpdate({ _id: id }, { isDeleted: true }, { new: true })
                     Update.deletedAt = await blogModel.findOneAndUpdate({ _id: id }, { deletedAt: Date() }, { new: true })
@@ -109,20 +109,15 @@ const deleteBlog = async function (req, res) {
                 } else {
                     return res.status(404).send({ status: false, msg: "Blog already deleted" });
                 }
-
             } else {
                 return res.status(404).send({ status: false, msg: "Access denied !!!" });
             }
-
         } else {
             res.status(404).send({ status: false, msg: "Blog Id not found" })
         }
-
     } catch (err) {
         res.status(500).send({ status: false, message: "Something went wrong", Error: err });
     }
-
-
 }
 
 // DELETE /blogs?queryParams - delete blogs by using specific queries or filters.
