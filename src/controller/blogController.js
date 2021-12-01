@@ -2,7 +2,7 @@ const blogModel = require('../model/blogModel.js')
 const authorModel = require('../model/authorModel.js')
 const jwt = require('jsonwebtoken')
 
-
+// creating blog by authorizing authorId.
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -30,6 +30,7 @@ const createBlog = async function (req, res) {
 
 }
 
+//get all blogs by using filters - title,tags,category & subcategory.
 const getBlog = async function (req, res) {
     try {
         if (req.query.category || req.query.authorId || req.query.tags || req.query.subcategory) {
@@ -55,7 +56,7 @@ const getBlog = async function (req, res) {
                 res.status(200).send({ status: true, message: "Successfully fetched all blogs", data: data })
             }
         } else {
-            return res.status(404).send({ status: false, msg: "Mandatory body not given" });
+            return res.status(404).send({ status: false, msg: "Mandatory filter not given" });
         }
     } catch (err) {
         res.status(500).send({ status: false, message: "Something went wrong", Error: err });
