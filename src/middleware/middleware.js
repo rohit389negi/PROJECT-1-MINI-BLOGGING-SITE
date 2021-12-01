@@ -10,7 +10,7 @@ const blogId = async function (req, res, next) {
             let check = await blogModel.findOne({ isDeleted: false })
             let checkDelete = check.isDeleted
             if (checkDelete === true) {
-                return res.status(401).send({ message: "blog already Deleted"})
+                return res.status(401).send({ message: "Blog already Deleted"})
             } else {
                 req.body.blogId = data
                 next()
