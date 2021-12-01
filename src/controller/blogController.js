@@ -1,39 +1,28 @@
 const blogModel = require('../model/blogModel.js')
 const authorModel = require('../model/authorModel.js')
-
-
-
-// const loginAuthor = async function(req,res){
-//      if(req.body && req.body.email && req.body.password){
-//         let author = await authorModel.findOne({ email: req.body.email, password: req.body.password, isDelete: false })
-//           if(user){
-//             let payload = { _id: author._id, email: author.email }
-//             let generateToken = jwt.sign(payload, 'projectBlog')
-//             res.status(200).send({ status: true, data: { authorId: author._id }, token: generateToken })
-//           }else{
-//             res.status(401).send({ status: false, message: "invalid Username or Password" })
-//           } 
-//      }else{
-//         res.status(400).send({ status: false, message: "Request body must contain Username and Password" })
-//      }
-// }
-
+const jwt = require('jsonwebtoken')
 
 
 const createBlog = async function (req, res) {
-
     try {
         let data = req.body
-        if (data) {
-            let user = await authorModel.findById({ _id: req.body.authorId })
-            if (user) {
-                let savedBlog = await blogModel.create(data)
-                res.status(201).send({ status: true, msg: "succesful blog creation", data: savedBlog })
-            } else (
-                res.status(400).send({ status: false, msg: "invalid Author Id" })
-            )
+
+        if (req.body.title && req.body.body && req.body.tags && req.body.subcategory) {
+            if (req.validate._id == req.body.authorId) {
+                let user = await authorModel.findById({ _id: req.body.authorId })
+                if (user) {
+                    let savedBlog = await blogModel.create(data)
+                    res.status(201).send({ status: true, msg: "succesful blog creation", data: savedBlog })
+                } else {
+                    res.status(400).send({ status: false, msg: "invalid Author Id" })
+                }
+
+            } else {
+                res.status(400).send({ status: false, msg: "Not Authorize" })
+            }
+
         } else {
-            res.status(400).send({ status: false, msg: "Mendatory body missing" })
+            res.status(400).send({ status: false, msg: "Mandatory body missing" })
         }
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
@@ -41,34 +30,72 @@ const createBlog = async function (req, res) {
 
 }
 
-const returnBlogsFiltered = async function (req, res) {
+const getBlog = async function (req, res) {
     try {
-        const blogFound = await blogModel.find(req.query);
-        res.status(200).send({ msg: "succes", data: blogFound });
+        if (req.query.category || req.query.authorId || req.query.tags || req.query.subcategory) {
+            if (req.validate._id == req.query.authorId) {
+                let obj = {};
+                if (req.query.category) {
+                    obj.category = req.query.category
+                }
+                if (req.query.authorId) {
+                    obj.authorId = req.query.authorId;
+                }
+                if (req.query.tags) {
+                    obj.tags = req.query.tags
+                }
+                if (req.query.subcategory) {
+                    obj.subcategory = req.query.subcategory
+                }
+                obj.isDeleted = false
+                obj.isPublished = true
+                let data = await blogModel.find(obj)
+                if (!data) {
+                    return res.status(404).send({ status: false, msg: "The given data is Invalid" });
+                } else {
+                    res.status(201).send({ status: true, data: data })
+                }
+
+            } else {
+                res.status(400).send({ status: false, msg: "Not Authorize" })
+            }
+
+        } else {
+            return res.status(404).send({ status: false, msg: "Mandatary body not given" });
+        }
 
     } catch (err) {
-        res.status(500).send({ msg: err });
+        res.status(500).send({ status: false, msg: err.message })
     }
+
 
 }
 
 const updateDetails = async function (req, res) {
     try {
-        const title = req.body.title;
-        const body = req.body.body;
-        const tags = req.body.tags;
-        const subcategory = req.body.subcategory;
-        let Update = {}
-        Update.title = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { title: title }, { new: true })
-        Update.body = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { body: body }, { new: true })
-        Update.tags = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { tags: tags } }, { new: true })
-        Update.subcategory = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { subcategory: subcategory } }, { new: true })
-        Update.isPublished = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { isPublished: true }, { new: true })
-        Update.publishedAt = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { publishedAt: Date() }, { new: true })
-        let updatedBlog = await blogModel.find({ _id: req.params.blogId })
+        let data = req.body
+        if (req.body.title && req.body.body && req.body.tags && req.body.subcategory) {
+            if (req.validate._id == req.query.authorId) {
+                const title = req.body.title;
+                const body = req.body.body;
+                const tags = req.body.tags;
+                const subcategory = req.body.subcategory;
+                let Update = {}
+                Update.title = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { title: title }, { new: true })
+                Update.body = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { body: body }, { new: true })
+                Update.tags = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { tags: tags } }, { new: true })
+                Update.subcategory = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { $push: { subcategory: subcategory } }, { new: true })
+                Update.isPublished = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { isPublished: true }, { new: true })
+                Update.publishedAt = await blogModel.findOneAndUpdate({ _id: req.params.blogId }, { publishedAt: Date() }, { new: true })
+                let updatedBlog = await blogModel.find({ _id: req.params.blogId })
 
-        res.send({ data: updatedBlog })
-
+                res.send({ data: updatedBlog })
+            } else {
+                return res.status(404).send({ status: false, msg: "Not Authorize" });
+            }
+        } else {
+            return res.status(404).send({ status: false, msg: "Mandatary body not given" });
+        }
     } catch (err) {
         res.status(500).send({ msg: err });
     }
@@ -79,9 +106,15 @@ const deleteBlog = async function (req, res) {
     try {
         let id = req.params.blogId
 
-        if (id) {
-            let user = await blogModel.findOneAndUpdate({ _id: id }, { isDeleted: true })
-            res.status(200).send({ status: true })
+        if (req.params.blogId) {
+            if (req.validate._id == req.query.authorId) {
+                let Update = {}
+                Update.isDeleted=await blogModel.findOneAndUpdate({ _id: id }, { isDeleted: true },{new:true})
+                Update.deletedAt=await blogModel.findOneAndUpdate({ _id: id }, { deletedAt: Date() },{new:true})
+                res.status(200).send({ status: true })
+            } else {
+                return res.status(404).send({ status: false, msg: "Not Authorize" });
+            }
 
         } else {
             res.status(404).send({ status: false, msg: "Blog Id not found" })
@@ -97,34 +130,65 @@ const deleteBlog = async function (req, res) {
 
 const deleteSpecific = async function (req, res) {
     try {
-        let obj = {};
-        if (req.query.category) {
-            obj.category = req.query.category
+        let data = req.query
+        if (req.query.category || req.query.authorId || req.query.tags || req.query.subcategory) {
+            if (req.validate._id == req.query.authorId) {
+                let obj = {};
+                if (req.query.category) {
+                    obj.category = req.query.category
+                }
+                if (req.query.authorId) {
+                    obj.authorId = req.query.authorId;
+                }
+                if (req.query.tags) {
+                    obj.tags = req.query.tags
+                }
+                if (req.query.subcategory) {
+                    obj.subcategory = req.query.subcategory
+                }
+                if (req.query.published) {
+                    obj.isPublished = req.query.isPublished
+                }
+                let data = await blogModel.findOne(obj);
+                if (!data) {
+                    return res.status(404).send({ status: false, msg: "The given data is Invalid" });
+                }
+                data.isDeleted = true
+                data.deletedAt = Date()
+                data.save();
+                res.status(200).send({ msg: "succesful", data: data });
+
+            } else {
+                res.status(404).send({ status: false, msg: "Blog Id not found" })
+            }
+
+        } else {
+            return res.status(404).send({ status: false, msg: "Not Authorize" });
         }
-        if (req.query.authorId) {
-            obj.authorId = req.query.authorId;
-        }
-        if (req.query.tags) {
-            obj.tags = req.query.tags
-        }
-        if (req.query.subcategory) {
-            obj.subcategory = req.query.subcategory
-        }
-        if (req.query.published) {
-            obj.isPublished = req.query.isPublished
-        }
-        let data = await blogModel.findOne(obj);
-        if (!data) {
-            return res.status(404).send({ status: false, msg: "The given data is Invalid" });
-        }
-        data.isDeleted = true;
-        data.save();
-        res.status(200).send({ msg: "succesful", data: data });
     }
     catch (err) {
         res.status(500).send({ msg: err });
     }
 }
+
+//!--------------------------------------------Login-----------------------------------------------------------------///
+
+const loginAuthor = async function (req, res) {
+    if (req.body && req.body.email && req.body.password) {
+        let author = await authorModel.findOne({ email: req.body.email, password: req.body.password })
+        if (author) {
+            let payload = { _id: author._id, email: author.email }
+            let generateToken = jwt.sign(payload, 'projectBlog')
+            res.header('x-api-key', generateToken)
+            res.status(200).send({ status: true, data: { authorId: author._id }, token: generateToken })
+        } else {
+            res.status(401).send({ status: false, message: "invalid Username or Password" })
+        }
+    } else {
+        res.status(400).send({ status: false, message: "Request body must contain email and Password" })
+    }
+}
+
 module.exports = {
-    createBlog, returnBlogsFiltered, updateDetails, deleteBlog, deleteSpecific
+    createBlog, getBlog, updateDetails, deleteBlog, deleteSpecific, loginAuthor
 }
