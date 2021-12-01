@@ -50,7 +50,7 @@ const getBlog = async function (req, res) {
             obj.isDeleted = false
             obj.isPublished = true
             let data = await blogModel.find(obj)
-            if (!data) {
+            if (data==false) {
                 return res.status(404).send({ status: false, msg: "The given data is Invalid" });
             } else {
                 res.status(200).send({ status: true, message: "Successfully fetched all blogs", data: data })
