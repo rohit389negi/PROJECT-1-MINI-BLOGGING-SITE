@@ -1,0 +1,2 @@
+# PROJECT-1-MINI-BLOGGING-SITE
+This is my first project on making a MINI BLOGGING SITE, written in JAVASCRIPT using NODEJS, EXPRESS FRAMEWORK and MONGODB 
