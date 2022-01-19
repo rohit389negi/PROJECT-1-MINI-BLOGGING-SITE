@@ -53,13 +53,13 @@ const getBlog = async function (req, res) {
             if (data==false) {
                 return res.status(404).send({ status: false, msg: "The filter value is Invalid" });
             } else {
-                res.status(200).send({ status: true, message: "Successfully fetched all blogs", data: data })
+              return  res.status(200).send({ status: true, message: "Successfully fetched all blogs", data: data })
             }
         } else {
             return res.status(404).send({ status: false, msg: "Mandatory filter not given" });
         }
     } catch (err) {
-        res.status(500).send({ status: false, message: "Something went wrong", Error: err });
+       return  res.status(500).send({ status: false, message: "Something went wrong", Error: err });
     }
 }
 
@@ -89,7 +89,7 @@ async function updateDetails(req, res) {
             return res.status(404).send({ status: false, msg: "Mandatory body not given" })
         }
     } catch (err) {
-        res.status(500).send({ status: false, message: "Something went wrong", Error: err });
+      return  res.status(500).send({ status: false, message: "Something went wrong", Error: err });
     }
 }
 
@@ -113,10 +113,10 @@ const deleteBlog = async function (req, res) {
                 return res.status(404).send({ status: false, msg: "Access denied !!!" });
             }
         } else {
-            res.status(404).send({ status: false, msg: "Blog Id not found" })
+           return res.status(404).send({ status: false, msg: "Blog Id not found" })
         }
     } catch (err) {
-        res.status(500).send({ status: false, message: "Something went wrong", Error: err });
+       return res.status(500).send({ status: false, message: "Something went wrong", Error: err });
     }
 }
 
@@ -157,7 +157,7 @@ const deleteSpecific = async function (req, res) {
                 }
 
             } else {
-                res.status(404).send({ status: false, msg: "Access denied !!!" })
+               return res.status(404).send({ status: false, msg: "Access denied !!!" })
             }
 
         } else {
@@ -165,7 +165,7 @@ const deleteSpecific = async function (req, res) {
         }
     }
     catch (err) {
-        res.status(500).send({ status: false, message: "Something went wrong", Error: err });
+       return res.status(500).send({ status: false, message: "Something went wrong", Error: err });
     }
 }
 
@@ -178,12 +178,12 @@ const loginAuthor = async function (req, res) {
             let payload = { _id: author._id, email: author.email }
             let generateToken = jwt.sign(payload, 'projectBlog')
             res.header('x-api-key', generateToken)
-            res.status(200).send({ status: true, data: { authorId: author._id }, token: generateToken })
+         return   res.status(200).send({ status: true, data: { authorId: author._id }, token: generateToken })
         } else {
-            res.status(401).send({ status: false, message: "invalid Username or Password" })
+          return  res.status(401).send({ status: false, message: "invalid Username or Password" })
         }
     } else {
-        res.status(400).send({ status: false, message: "Request body must contain email and Password" })
+       return res.status(400).send({ status: false, message: "Request body must contain email and Password" })
     }
 }
 

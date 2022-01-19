@@ -1,13 +1,14 @@
 const mongoose = require('mongoose')
-const authorSchema = new mongoose.Schema({
 
+const authorSchema = new mongoose.Schema({
     fname: {
         type: String,
-        required: true
+        required: 'First name is required',
+        trim: true,
     },
     lname: {
         type: String,
-        required: true
+        required: 'Last Name is required',
     },
     title: {
         type: String,
