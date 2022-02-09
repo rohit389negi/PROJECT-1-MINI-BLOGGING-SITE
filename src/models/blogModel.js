@@ -1,16 +1,16 @@
-
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const blogSchema = new mongoose.Schema({
-
     title: {
         type: String,
-        required: true
+        required: 'Title is required',
+        trim:true
     },
     body: {
         type: String,
-        required: true
+        required: 'Body is required',
+        trim:true
     },
     authorId: {
         type: ObjectId,
@@ -19,7 +19,8 @@ const blogSchema = new mongoose.Schema({
     tags: [String],
     category: {
         type: String,
-        required: true
+        required: 'category is required',
+        trim:true
     },
     subcategory: [String],
     deletedAt: {
@@ -40,4 +41,4 @@ const blogSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-module.exports = mongoose.model('Blogg', blogSchema)
+module.exports = mongoose.model('Blog', blogSchema)

@@ -8,9 +8,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const mongoose = require("mongoose")
+const mongoose = require('mongoose')
 
-mongoose.connect("mongodb+srv://monty-python:SnYUEY4giV9rekw@functionup-backend-coho.0zpfv.mongodb.net/Room-15?retryWrites=true&w=majority", {useNewUrlParser: true})
+mongoose.connect("mongodb+srv://users-open-to-all:hiPassword123@cluster0.uh35t.mongodb.net/rohitnegi?retryWrites=true&w=majority", {useNewUrlParser: true})
 
 
 app.use('/', route);
