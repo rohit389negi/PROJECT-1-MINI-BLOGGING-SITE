@@ -125,14 +125,16 @@ const updateBlog = async function (req, res) {
             return
         }
         const blog = await blogModel.findOne({_id: blogId, isDeleted: false})
+       // console.log(blog.authorId == req.authorId)
         if(!blog) {
             res.status(404).send({status: false, message: `Blog not found`})
             return
         }
-        if(blog.authorId !== req.authorId) {
+        if(blog.authorId != req.authorId) {
             res.status(401).send({status: false, message: `Unauthorized access! Owner info doesn't match`});
             return
         }
+
         const {title, body, tags, category, subcategory} = requestBody;
         let newBlog = await blogModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
              { title, body, $addToSet: { subcategory: subcategory, tags: tags } }, { new: true })
@@ -221,45 +223,4 @@ const deleteBlogByParams = async function (req, res) {
 }
 
 module.exports = {createBlog, getBlog, updateBlog, deleteBlogByID, deleteBlogByParams}
-
-
-
-        // const updatedBlogData = {}
-        // if(isValid(title)) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$set')) updatedBlogData['$set'] = {}
-        //     updatedBlogData['$set']['title'] = title
-        // }
-        // if(isValid(body)) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$set')) updatedBlogData['$set'] = {}
-        //     updatedBlogData['$set']['body'] = body
-        // }
-        // if(isValid(category)) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$set')) updatedBlogData['$set'] = {}
-        //     updatedBlogData['$set']['category'] = category
-        // }
-        // if(isPublished !== undefined) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$set')) updatedBlogData['$set'] = {}
-        //     updatedBlogData['$set']['isPublished'] = isPublished
-        //     updatedBlogData['$set']['publishedAt'] = isPublished ? new Date() : null
-        // }
-        // if(tags) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$addToSet')) updatedBlogData['$addToSet'] = {}   
-        //     if(Array.isArray(tags)) {
-        //         updatedBlogData['$addToSet']['tags'] = { $each: [...tags]}
-        //     }
-        //     if(typeof tags === "string") {
-        //         updatedBlogData['$addToSet']['tags'] = tags
-        //     }
-        // }
-        // if(subcategory) {
-        //     if(!Object.prototype.hasOwnProperty.call(updatedBlogData, '$addToSet')) updatedBlogData['$addToSet'] = {}
-        //     if(Array.isArray(subcategory)) {
-        //         updatedBlogData['$addToSet']['subcategory'] = { $each: [...subcategory]}
-        //     }
-        //     if(typeof subcategory === "string") {
-        //         updatedBlogData['$addToSet']['subcategory'] = subcategory
-        //     }
-        // }
-        // const updatedBlog = await blogModel.findOneAndUpdate({_id: blogId}, updatedBlogData, {new: true})
-
 
