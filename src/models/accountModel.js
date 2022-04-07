@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const authorSchema = new mongoose.Schema({
+const accountSchema = new mongoose.Schema({
 
     fname: {
         type: String,
@@ -12,10 +12,10 @@ const authorSchema = new mongoose.Schema({
         required: 'Last Name is required',
         trim:true
     },
-    title: {
+    roleType: {
         type: String,
-        required: 'Title is required',
-        enum: ['Mr', 'Mrs', 'Miss']
+        required: 'roleType is required',
+        enum: ['admin', 'user', 'guest']
     },
     email: {
         type: String,
@@ -28,4 +28,4 @@ const authorSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-module.exports = mongoose.model('Author', authorSchema)
+module.exports = mongoose.model('account', accountSchema)
